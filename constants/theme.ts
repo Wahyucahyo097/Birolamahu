@@ -1,53 +1,56 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+// constants/Colors.ts
 
-import { Platform } from 'react-native';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+// Definisi warna utama dari desain Lamahu Tour
+const emeraldGreen = "#065F46";
+const luxuryGold = "#B8860B";
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    primary: "#065F46",
+    primaryMid: "#047857",
+    primaryLight: "#D1FAE5",
+    primaryDark: "#064E3B",
+    accent: "#B8860B",
+    accentLight: "#FEF3C7",
+
+    background: "#FFFFFF",
+    backgroundSoft: "#F9FAFB",
+    backgroundMuted: "#F3F4F6",
+
+    text: "#1A1A1A",
+    textSecondary: "#374151",
+    textMuted: "#6B7280",
+    textInverse: "#FFFFFF",
+
+    border: "#D1D5DB",
+    borderLight: "#E5E7EB",
+
+    icon: "#6B7280",
+    error: "#EF4444",
+    errorLight: "#FEE2E2",
+    success: "#10B981",
+    successLight: "#D1FAE5",
+    warning: "#F59E0B",
+    warningLight: "#FEF3C7",
+
+    overlayDark: "rgba(0,0,0,0.55)",
+    white: "#FFFFFF",
+    black: "#000000",
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    // Bisa disamakan dulu jika fokus pada Light Mode sesuai desain
+    text: "#ECEDEE",
+    background: "#151718",
+    tint: luxuryGold,
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
+    tabIconSelected: luxuryGold,
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+// Menambahkan pengaturan font agar konsisten memanggil Jakarta Sans
+export const Fonts = {
+  bold: "Jakarta-Bold",
+  regular: "Jakarta-Regular",
+};
+export type ColorScheme = typeof Colors.light;
