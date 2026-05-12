@@ -6,14 +6,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const OTP_LENGTH = 6;
@@ -79,6 +79,12 @@ export default function OtpScreen() {
   };
 
   const phone = state.phoneNumber;
+
+  useEffect(() => {
+    if (!phone) {
+      router.replace("/(auth)/login");
+    }
+  }, [phone]);
 
   return (
     <KeyboardAvoidingView

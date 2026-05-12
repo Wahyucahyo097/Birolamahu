@@ -1,27 +1,26 @@
 import { BERITA_DATA, PAKET_DATA } from "@/constants/Data";
 import { Colors } from "@/constants/theme";
 import {
-  BorderRadius,
-  Shadow,
-  Spacing,
-  Typography,
+    BorderRadius,
+    Shadow,
+    Spacing,
+    Typography,
 } from "@/constants/Typography";
 import { useUserStore } from "@/store/useUserStore";
 import { formatRupiah } from "@/utils/formatCurrency";
 import { openWhatsApp } from "@/utils/whatsapp";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
-  Dimensions,
-  Image,
-  ImageBackground,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    ImageBackground,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -346,9 +345,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.extraBold,
     lineHeight: 36,
     marginBottom: 8,
-    textShadowColor: "rgba(0,0,0,0.25)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
+    textShadow: "0 1px 4px rgba(0,0,0,0.25)",
   },
   heroSub: {
     fontSize: Typography.size.base,

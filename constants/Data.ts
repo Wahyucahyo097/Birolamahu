@@ -450,7 +450,7 @@ export const BERITA_DATA: BeritaItem[] = [
 
 // ── CONFIG ────────────────────────────────────────────
 export const APP_CONFIG = {
-  waAdminNumber: "6281234567890", // Ganti dengan nomor WA admin
+  waAdminNumber: "628386858378", // Ganti dengan nomor WA admin
   appName: "Lamahu Tour",
   tagline: "Haji & Umrah",
   adminEmail: "admin@lamahugroup.com",
