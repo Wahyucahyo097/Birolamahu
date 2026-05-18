@@ -1,10 +1,10 @@
 import { BERITA_DATA, PAKET_DATA } from "@/constants/Data";
 import { Colors } from "@/constants/theme";
 import {
-    BorderRadius,
-    Shadow,
-    Spacing,
-    Typography,
+  BorderRadius,
+  Shadow,
+  Spacing,
+  Typography,
 } from "@/constants/Typography";
 import { useUserStore } from "@/store/useUserStore";
 import { formatRupiah } from "@/utils/formatCurrency";
@@ -12,15 +12,15 @@ import { openWhatsApp } from "@/utils/whatsapp";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
-    Dimensions,
-    Image,
-    ImageBackground,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  ImageBackground,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -275,23 +275,22 @@ export default function BerandaScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.light.primary },
+  safe: { flex: 1, backgroundColor: Colors.light.background },
   content: { paddingBottom: 32, backgroundColor: Colors.light.backgroundSoft },
 
   // Header
-  headerWrapper: { paddingBottom: 44, backgroundColor: Colors.light.primary },
+  headerWrapper: { paddingBottom: 52, backgroundColor: Colors.light.primary },
   heroBg: {
-    height: 290,
+    height: 300,
     justifyContent: "space-between",
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     overflow: "hidden",
   },
-  heroImg: { opacity: 0.4 },
+  heroImg: { opacity: 0.45 },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.light.primary,
-    opacity: 0.55,
+    backgroundColor: "rgba(6,95,70,0.68)",
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
   },
@@ -345,30 +344,32 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.extraBold,
     lineHeight: 36,
     marginBottom: 8,
-    textShadow: "0 1px 4px rgba(0,0,0,0.25)",
+    textShadowColor: "rgba(0,0,0,0.24)",
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 10,
   },
   heroSub: {
     fontSize: Typography.size.base,
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(255,255,255,0.88)",
     fontFamily: Typography.fontFamily.regular,
-    lineHeight: 20,
+    lineHeight: 22,
   },
 
   // Trust badge
   trustCard: {
     position: "absolute",
-    bottom: 0,
-    left: 14,
-    right: 14,
+    bottom: -16,
+    left: 18,
+    right: 18,
     flexDirection: "row",
     backgroundColor: "#FFF",
-    borderRadius: BorderRadius.lg,
-    paddingVertical: 13,
-    paddingHorizontal: 14,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
     alignItems: "center",
     ...Shadow.lg,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
+    borderColor: "rgba(0,0,0,0.05)",
   },
   trustItem: { flexDirection: "row", alignItems: "center", gap: 9, flex: 1 },
   trustIcon: {
@@ -410,8 +411,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: Spacing.md,
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 24,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: Typography.size.lg,
@@ -420,8 +421,8 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.bold,
   },
   seeAll: {
-    fontSize: Typography.size.base,
-    color: Colors.light.primary,
+    fontSize: Typography.size.sm,
+    color: Colors.light.accent,
     fontFamily: Typography.fontFamily.semiBold,
   },
 
@@ -434,13 +435,12 @@ const styles = StyleSheet.create({
   menuCard: {
     flex: 1,
     backgroundColor: "#FFF",
-    borderRadius: BorderRadius.lg,
-    paddingVertical: 14,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: 18,
     alignItems: "center",
-    gap: 6,
+    gap: 8,
     ...Shadow.sm,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
+    borderWidth: 0,
   },
   menuIcon: {
     width: 46,
@@ -461,14 +461,13 @@ const styles = StyleSheet.create({
   // Paket cards
   hList: { paddingLeft: Spacing.md, paddingRight: 4, paddingBottom: 4 },
   paketCard: {
-    width: W * 0.64,
+    width: W * 0.66,
     backgroundColor: "#FFF",
-    borderRadius: BorderRadius.lg,
-    marginRight: 12,
+    borderRadius: BorderRadius.xl,
+    marginRight: 14,
     overflow: "hidden",
-    ...Shadow.md,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
+    ...Shadow.lg,
+    borderWidth: 0,
   },
   paketImg: { width: "100%", height: 120 },
   paketBadge: {
@@ -517,12 +516,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#FFF",
     marginHorizontal: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    marginBottom: 10,
+    borderRadius: BorderRadius.xl,
+    marginBottom: 12,
     overflow: "hidden",
     ...Shadow.sm,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
+    borderWidth: 0,
   },
   beritaImg: { width: 90, height: 90 },
   beritaInfo: { flex: 1, padding: 10 },
@@ -558,12 +556,13 @@ const styles = StyleSheet.create({
   waSection: { margin: Spacing.md },
   waCard: {
     backgroundColor: Colors.light.primary,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 14,
+    ...Shadow.md,
   },
   waLeft: { flex: 1 },
   waTitle: {

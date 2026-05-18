@@ -42,24 +42,23 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.light.primary,
-        tabBarInactiveTintColor: Colors.light.icon,
+        tabBarInactiveTintColor: Colors.light.textMuted,
         tabBarLabelStyle: {
           fontFamily: Typography.fontFamily.semiBold,
           fontSize: 10,
           marginBottom: Platform.OS === "ios" ? 0 : 4,
         },
         tabBarStyle: {
-          borderTopWidth: 1,
-          borderTopColor: Colors.light.borderLight,
-          height: Platform.OS === "ios" ? 84 : 64,
-          paddingBottom: Platform.OS === "ios" ? 24 : 8,
-          paddingTop: 6,
+          borderTopWidth: 0,
+          height: Platform.OS === "ios" ? 86 : 68,
+          paddingBottom: Platform.OS === "ios" ? 24 : 10,
+          paddingTop: 10,
           backgroundColor: Colors.light.white,
-          elevation: 12,
+          elevation: 20,
           shadowColor: "#000",
-          shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.08,
-          shadowRadius: 12,
+          shadowOffset: { width: 0, height: -6 },
+          shadowOpacity: 0.12,
+          shadowRadius: 18,
         },
       }}
     >

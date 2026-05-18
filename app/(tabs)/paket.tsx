@@ -81,31 +81,34 @@ export default function PaketScreen() {
       </View>
 
       {/* Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterList}
-      >
-        {FILTERS.map((f) => (
-          <TouchableOpacity
-            key={f.value}
-            style={[
-              styles.filterChip,
-              activeFilter === f.value && styles.filterChipActive,
-            ]}
-            onPress={() => setActiveFilter(f.value)}
-          >
-            <Text
+      <View style={styles.filterWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterList}
+        >
+          {FILTERS.map((f) => (
+            <TouchableOpacity
+              key={f.value}
               style={[
-                styles.filterText,
-                activeFilter === f.value && styles.filterTextActive,
+                styles.filterChip,
+                activeFilter === f.value && styles.filterChipActive,
               ]}
+              onPress={() => setActiveFilter(f.value)}
             >
-              {f.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.filterText,
+                  activeFilter === f.value && styles.filterTextActive,
+                ]}
+              >
+                {f.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* List */}
       <ScrollView
@@ -272,15 +275,16 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
     marginHorizontal: Spacing.md,
-    marginVertical: 10,
-    backgroundColor: Colors.light.backgroundMuted,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: 12,
+    marginVertical: 12,
+    backgroundColor: Colors.light.white,
+    borderRadius: BorderRadius.xl,
+    paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
-    height: 44,
+    height: 48,
+    ...Shadow.sm,
   },
   searchInput: {
     flex: 1,
@@ -289,14 +293,29 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.regular,
   },
 
-  filterList: { paddingHorizontal: Spacing.md, paddingBottom: 8, gap: 8 },
-  filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: BorderRadius.pill,
-    backgroundColor: Colors.light.backgroundMuted,
+  filterWrapper: {
+    marginHorizontal: Spacing.md,
+    marginBottom: 10,
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Colors.light.backgroundSoft,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
+    ...Shadow.sm,
+  },
+  filterList: { paddingHorizontal: 4, gap: 10, alignItems: "center" },
+  filterChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: BorderRadius.pill,
+    backgroundColor: Colors.light.white,
+    borderWidth: 1,
+    borderColor: Colors.light.borderLight,
+    minHeight: 42,
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 140,
   },
   filterChipActive: {
     backgroundColor: Colors.light.primary,
@@ -304,12 +323,13 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontSize: Typography.size.sm,
-    color: Colors.light.textMuted,
-    fontFamily: Typography.fontFamily.medium,
+    color: Colors.light.text,
+    fontFamily: Typography.fontFamily.semiBold,
+    textAlign: "center",
   },
   filterTextActive: {
     color: "#FFF",
-    fontFamily: Typography.fontFamily.semiBold,
+    fontFamily: Typography.fontFamily.bold,
   },
 
   list: { padding: Spacing.md, gap: 14 },
@@ -323,22 +343,21 @@ const styles = StyleSheet.create({
   // Card
   card: {
     backgroundColor: "#FFF",
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xxl,
     overflow: "hidden",
-    ...Shadow.md,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.05)",
+    ...Shadow.lg,
+    borderWidth: 0,
   },
   cardImgWrap: { position: "relative", height: 160 },
   cardImg: { width: "100%", height: "100%" },
   badge: {
     position: "absolute",
-    top: 10,
-    left: 10,
+    top: 12,
+    left: 12,
     backgroundColor: Colors.light.accent,
     borderRadius: BorderRadius.pill,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
   badgeText: {
     fontSize: 10,
@@ -359,7 +378,7 @@ const styles = StyleSheet.create({
     color: Colors.light.error,
     fontFamily: Typography.fontFamily.semiBold,
   },
-  cardBody: { padding: Spacing.md },
+  cardBody: { padding: Spacing.lg },
   maskapaiRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -439,11 +458,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.accentLight,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 11,
+    paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.borderLight,
+    borderTopColor: Colors.light.accent,
+    borderRadius: BorderRadius.lg,
+    margin: Spacing.md,
+    marginTop: 8,
   },
   bannerText: {
     flex: 1,

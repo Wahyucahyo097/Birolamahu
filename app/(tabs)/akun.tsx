@@ -1,46 +1,55 @@
 import Button, { isValidIndonesia } from "@/components/ui/Button";
 import { Colors } from "@/constants/theme";
 import {
-    BorderRadius,
-    Shadow,
-    Spacing,
-    Typography,
+  BorderRadius,
+  Shadow,
+  Spacing,
+  Typography,
 } from "@/constants/Typography";
 import { useUserStore } from "@/store/useUserStore";
 import { openWhatsApp } from "@/utils/whatsapp";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    Modal,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Modal,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Input from "@/components/ui/Input";
 
-
 export default function AkunScreen() {
   const { state, logout, updateProfile } = useUserStore();
-  const user = state.user!;
+  const user = state.user;
   const [editModal, setEditModal] = useState(false);
   const [editForm, setEditForm] = useState({
-    nama: user.nama,
-    nomorWA: user.nomorWA,
-    asalDaerah: user.asalDaerah,
+    nama: user?.nama ?? "",
+    nomorWA: user?.nomorWA ?? "",
+    asalDaerah: user?.asalDaerah ?? "",
   });
   const [editErrors, setEditErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
+  if (!user) {
+    return null;
+  }
+
   const handleLogout = () => {
+    const confirmLogout = async () => {
+      await logout();
+      router.replace("/(auth)/login");
+    };
+
     Alert.alert("Keluar", "Yakin ingin keluar dari akun ini?", [
       { text: "Batal", style: "cancel" },
-      { text: "Keluar", style: "destructive", onPress: logout },
+      { text: "Keluar", style: "destructive", onPress: confirmLogout },
     ]);
   };
 
@@ -314,20 +323,23 @@ const styles = StyleSheet.create({
   profileHeader: {
     backgroundColor: Colors.light.primary,
     alignItems: "center",
-    paddingTop: 28,
-    paddingBottom: 36,
+    paddingTop: 32,
+    paddingBottom: 40,
     paddingHorizontal: Spacing.md,
+    borderBottomLeftRadius: BorderRadius.xxl,
+    borderBottomRightRadius: BorderRadius.xxl,
+    ...Shadow.lg,
   },
   avatarWrap: { marginBottom: 12 },
   avatarCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 86,
+    height: 86,
+    borderRadius: 43,
     backgroundColor: Colors.light.accent,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
-    borderColor: "rgba(255,255,255,0.3)",
+    borderColor: "rgba(255,255,255,0.32)",
   },
   avatarInitial: {
     fontSize: Typography.size["4xl"],
@@ -384,12 +396,11 @@ const styles = StyleSheet.create({
   dataCard: {
     backgroundColor: "#FFF",
     margin: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
     ...Shadow.sm,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
-    marginTop: -20,
+    borderWidth: 0,
+    marginTop: -26,
   },
   dataTitle: {
     fontSize: Typography.size.md,
@@ -454,15 +465,14 @@ const styles = StyleSheet.create({
   waCard: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 14,
     backgroundColor: "#FFF",
     marginHorizontal: Spacing.md,
     marginBottom: 14,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
     ...Shadow.sm,
-    borderWidth: 1,
-    borderColor: "#25D36630",
+    borderWidth: 0,
   },
   waTitle: {
     fontSize: Typography.size.base,
@@ -481,11 +491,10 @@ const styles = StyleSheet.create({
   menuCard: {
     backgroundColor: "#FFF",
     marginHorizontal: Spacing.md,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     overflow: "hidden",
     ...Shadow.sm,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
+    borderWidth: 0,
     marginBottom: 20,
   },
   menuItem: {
@@ -493,7 +502,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
+    paddingVertical: 16,
   },
   menuBorder: {
     borderBottomWidth: 1,

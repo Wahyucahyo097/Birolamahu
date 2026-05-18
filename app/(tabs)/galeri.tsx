@@ -1,20 +1,25 @@
 import { GALERI_DATA } from "@/constants/Data";
 import { Colors } from "@/constants/theme";
-import { BorderRadius, Spacing, Typography } from "@/constants/Typography";
+import {
+  BorderRadius,
+  Shadow,
+  Spacing,
+  Typography,
+} from "@/constants/Typography";
 import type { GaleriItem } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    Modal,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -50,28 +55,31 @@ export default function GaleriScreen() {
       </View>
 
       {/* Filter kategori */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterList}
-      >
-        {KATEGORI_FILTER.map((f) => (
-          <TouchableOpacity
-            key={f.value}
-            style={[styles.chip, activeKat === f.value && styles.chipActive]}
-            onPress={() => setActiveKat(f.value)}
-          >
-            <Text
-              style={[
-                styles.chipText,
-                activeKat === f.value && styles.chipTextActive,
-              ]}
+      <View style={styles.filterWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterList}
+        >
+          {KATEGORI_FILTER.map((f) => (
+            <TouchableOpacity
+              key={f.value}
+              style={[styles.chip, activeKat === f.value && styles.chipActive]}
+              onPress={() => setActiveKat(f.value)}
             >
-              {f.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.chipText,
+                  activeKat === f.value && styles.chipTextActive,
+                ]}
+              >
+                {f.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Jumlah foto */}
       <Text style={styles.countText}>{filtered.length} foto ditemukan</Text>
@@ -212,14 +220,29 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  filterList: { paddingHorizontal: Spacing.md, paddingVertical: 10, gap: 8 },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: BorderRadius.pill,
-    backgroundColor: Colors.light.backgroundMuted,
+  filterWrapper: {
+    marginHorizontal: Spacing.md,
+    marginBottom: 10,
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Colors.light.backgroundSoft,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
+    ...Shadow.sm,
+  },
+  filterList: { paddingHorizontal: 4, gap: 10, alignItems: "center" },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: BorderRadius.pill,
+    backgroundColor: Colors.light.white,
+    borderWidth: 1,
+    borderColor: Colors.light.borderLight,
+    minHeight: 42,
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 140,
   },
   chipActive: {
     backgroundColor: Colors.light.primary,
@@ -227,10 +250,14 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: Typography.size.sm,
-    color: Colors.light.textMuted,
-    fontFamily: Typography.fontFamily.medium,
+    color: Colors.light.text,
+    fontFamily: Typography.fontFamily.semiBold,
+    textAlign: "center",
   },
-  chipTextActive: { color: "#FFF", fontFamily: Typography.fontFamily.semiBold },
+  chipTextActive: {
+    color: "#FFF",
+    fontFamily: Typography.fontFamily.bold,
+  },
 
   countText: {
     fontSize: Typography.size.xs,
@@ -272,9 +299,10 @@ const styles = StyleSheet.create({
   // Modal
   modalBg: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.95)",
+    backgroundColor: "rgba(0,0,0,0.92)",
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 28,
   },
   modalClose: {
     position: "absolute",
@@ -288,19 +316,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 10,
   },
-  modalImg: { width: W, height: W, maxHeight: "60%" },
+  modalImg: {
+    width: W,
+    height: W,
+    maxHeight: "62%",
+    borderRadius: BorderRadius.lg,
+  },
   modalInfo: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: 16,
+    paddingTop: 18,
     alignSelf: "flex-start",
+    width: W,
   },
   modalKatPill: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.accent,
     borderRadius: BorderRadius.pill,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     alignSelf: "flex-start",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   modalKatText: {
     fontSize: 9.5,

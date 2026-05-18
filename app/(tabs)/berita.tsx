@@ -1,10 +1,10 @@
 import { BERITA_DATA } from "@/constants/Data";
 import { Colors } from "@/constants/theme";
 import {
-  BorderRadius,
-  Shadow,
-  Spacing,
-  Typography,
+    BorderRadius,
+    Shadow,
+    Spacing,
+    Typography,
 } from "@/constants/Typography";
 import type { BeritaItem } from "@/types";
 import { formatTanggal } from "@/utils/formatCurrency";
@@ -12,14 +12,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  Dimensions,
-  Image,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -111,31 +111,34 @@ export default function BeritaScreen() {
         )}
 
         {/* ── Filter ── */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterRow}
-        >
-          {FILTERS.map((f) => (
-            <TouchableOpacity
-              key={f.value}
-              style={[
-                styles.chip,
-                activeFilter === f.value && styles.chipActive,
-              ]}
-              onPress={() => setActiveFilter(f.value)}
-            >
-              <Text
+        <View style={styles.filterWrapper}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterRow}
+          >
+            {FILTERS.map((f) => (
+              <TouchableOpacity
+                key={f.value}
                 style={[
-                  styles.chipText,
-                  activeFilter === f.value && styles.chipTextActive,
+                  styles.chip,
+                  activeFilter === f.value && styles.chipActive,
                 ]}
+                onPress={() => setActiveFilter(f.value)}
               >
-                {f.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.chipText,
+                    activeFilter === f.value && styles.chipTextActive,
+                  ]}
+                >
+                  {f.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* ── Article List ── */}
         <View style={styles.list}>
@@ -234,30 +237,32 @@ const styles = StyleSheet.create({
 
   // Featured
   featured: {
-    height: 240,
+    height: 258,
     marginHorizontal: Spacing.md,
-    marginTop: 14,
-    borderRadius: BorderRadius.xl,
+    marginTop: 16,
+    borderRadius: BorderRadius.xxl,
     overflow: "hidden",
-    ...Shadow.md,
+    ...Shadow.lg,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
   },
   featuredImg: { width: "100%", height: "100%", position: "absolute" },
   featuredOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.52)",
+    backgroundColor: "rgba(0,0,0,0.34)",
   },
   featuredContent: {
     flex: 1,
     justifyContent: "flex-end",
-    padding: 16,
+    padding: 22,
   },
   featuredJudul: {
-    fontSize: Typography.size.xl,
+    fontSize: Typography.size["2xl"],
     fontWeight: "800",
     color: "#FFF",
     fontFamily: Typography.fontFamily.extraBold,
-    lineHeight: 26,
-    marginVertical: 6,
+    lineHeight: 32,
+    marginVertical: 8,
   },
   featuredRing: {
     fontSize: Typography.size.sm,
@@ -293,25 +298,49 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  filterRow: { paddingHorizontal: Spacing.md, paddingVertical: 12, gap: 8 },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: BorderRadius.pill,
-    backgroundColor: Colors.light.backgroundMuted,
+  filterWrapper: {
+    marginHorizontal: Spacing.md,
+    marginBottom: 14,
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Colors.light.backgroundSoft,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
+    ...Shadow.sm,
+  },
+  filterRow: {
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    gap: 10,
+    alignItems: "center",
+  },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: BorderRadius.pill,
+    backgroundColor: Colors.light.white,
+    borderWidth: 1,
+    borderColor: Colors.light.borderLight,
+    minHeight: 42,
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 120,
   },
   chipActive: {
-    backgroundColor: Colors.light.primary,
-    borderColor: Colors.light.primary,
+    backgroundColor: Colors.light.accent,
+    borderColor: Colors.light.accent,
   },
   chipText: {
     fontSize: Typography.size.sm,
-    color: Colors.light.textMuted,
-    fontFamily: Typography.fontFamily.medium,
+    color: Colors.light.text,
+    fontFamily: Typography.fontFamily.semiBold,
+    textAlign: "center",
   },
-  chipTextActive: { color: "#FFF", fontFamily: Typography.fontFamily.semiBold },
+  chipTextActive: {
+    color: "#FFF",
+    fontFamily: Typography.fontFamily.bold,
+  },
 
   list: { paddingHorizontal: Spacing.md, gap: 12 },
   empty: { alignItems: "center", paddingTop: 48, gap: 12 },
@@ -324,36 +353,39 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     backgroundColor: "#FFF",
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xxl,
     overflow: "hidden",
     ...Shadow.sm,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
   },
-  cardImgWrap: { width: 100, height: 100, position: "relative" },
+  cardImgWrap: { width: 110, height: 110, position: "relative" },
   cardImg: { width: "100%", height: "100%" },
   playBtn: {
     position: "absolute",
     top: "50%",
     left: "50%",
-    marginTop: -16,
-    marginLeft: -16,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    marginTop: -18,
+    marginLeft: -18,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(0,0,0,0.55)",
     alignItems: "center",
     justifyContent: "center",
   },
-  cardBody: { flex: 1, padding: 10 },
+  cardBody: { flex: 1, padding: 14 },
   katPill: {
     alignSelf: "flex-start",
+    backgroundColor: Colors.light.accent,
     borderRadius: BorderRadius.pill,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginBottom: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 6,
   },
-  katPillText: { fontSize: 9.5, fontFamily: Typography.fontFamily.bold },
+  katPillText: {
+    fontSize: 9.5,
+    fontFamily: Typography.fontFamily.bold,
+    color: "#FFF",
+  },
   cardJudul: {
     fontSize: Typography.size.sm,
     fontWeight: "700",
