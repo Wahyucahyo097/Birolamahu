@@ -1,25 +1,26 @@
 import Button, { isValidIndonesia } from "@/components/ui/Button";
 import { Colors } from "@/constants/theme";
 import {
-  BorderRadius,
-  Shadow,
-  Spacing,
-  Typography,
+    BorderRadius,
+    Shadow,
+    Spacing,
+    Typography,
 } from "@/constants/Typography";
 import { useUserStore } from "@/store/useUserStore";
 import { openWhatsApp } from "@/utils/whatsapp";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Modal,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,14 +43,25 @@ export default function AkunScreen() {
   }
 
   const handleLogout = () => {
+    console.log("DEBUG: handleLogout invoked");
+
     const confirmLogout = async () => {
-      await logout();
-      router.replace("/(auth)/login");
+      console.log("DEBUG: state before logout", state);
+      const success = await logout();
+      console.log("DEBUG: logout result", success);
+      // pastikan navigasi ke login tetap dilakukan meskipun ada masalah
+      setTimeout(() => router.replace("/(auth)/login"), 50);
     };
+
+    if (Platform.OS === "web") {
+      const ok = window.confirm("Yakin ingin keluar dari akun ini?");
+      if (ok) confirmLogout();
+      return;
+    }
 
     Alert.alert("Keluar", "Yakin ingin keluar dari akun ini?", [
       { text: "Batal", style: "cancel" },
-      { text: "Keluar", style: "destructive", onPress: confirmLogout },
+      { text: "Keluar", style: "destructive", onPress: () => confirmLogout() },
     ]);
   };
 

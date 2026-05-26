@@ -9,9 +9,9 @@ import {
 import { useUserStore } from "@/store/useUserStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
     Alert,
+    Platform,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -73,9 +73,24 @@ export default function AdminDashboard() {
   const { state, logout } = useUserStore();
 
   const handleLogout = () => {
+    const confirmLogout = async () => {
+      const success = await logout();
+      if (success) {
+        router.replace("/(auth)/login");
+      } else {
+        Alert.alert("Gagal", "Tidak dapat keluar. Coba lagi.");
+      }
+    };
+
+    if (Platform.OS === "web") {
+      const ok = window.confirm("Yakin ingin keluar dari panel admin?");
+      if (ok) confirmLogout();
+      return;
+    }
+
     Alert.alert("Keluar", "Yakin ingin keluar dari panel admin?", [
       { text: "Batal", style: "cancel" },
-      { text: "Keluar", style: "destructive", onPress: logout },
+      { text: "Keluar", style: "destructive", onPress: () => confirmLogout() },
     ]);
   };
 

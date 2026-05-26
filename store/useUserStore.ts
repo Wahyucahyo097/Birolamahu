@@ -4,13 +4,14 @@
 // ═══════════════════════════════════════════════════════
 
 import type { AuthState, UserProfile } from "@/types";
+import { logoutUser as firebaseLogoutUser } from "@/utils/firebaseAuth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
 
 // ── Storage Keys ─────────────────────────────────────
@@ -35,7 +36,7 @@ interface UserStoreContext {
   // Auth
   setPhone: (phone: string) => void;
   login: (phone: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
   // Profile
   saveProfile: (
     profile: Omit<UserProfile, "id" | "isProfileComplete" | "createdAt">,
@@ -120,12 +121,33 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
     [state],
   );
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (): Promise<boolean> => {
     setState(DEFAULT_STATE);
-    await Promise.all([
-      AsyncStorage.removeItem(KEYS.AUTH),
-      AsyncStorage.removeItem(KEYS.USER),
-    ]);
+
+    try {
+      await Promise.all([
+        AsyncStorage.removeItem(KEYS.AUTH),
+        AsyncStorage.removeItem(KEYS.USER),
+        AsyncStorage.removeItem(KEYS.PHONE),
+      ]);
+    } catch (error) {
+      console.warn(
+        "⚠️ Logout storage cleanup failed, proceeding anyway:",
+        error,
+      );
+      // jangan batalkan logout hanya karena masalah storage
+    }
+
+    try {
+      await firebaseLogoutUser();
+    } catch (error) {
+      console.warn(
+        "⚠️ Firebase logout failed, proceeding with local logout:",
+        error,
+      );
+    }
+
+    return true;
   }, []);
 
   const saveProfile = useCallback(
