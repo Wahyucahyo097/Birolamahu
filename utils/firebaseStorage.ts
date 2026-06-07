@@ -1,51 +1,35 @@
 // ═══════════════════════════════════════════════════════
-// utils/firebaseStorage.ts — Firebase Storage Helpers
+// utils/firebaseStorage.ts — Storage helpers using Supabase Storage
 // ═══════════════════════════════════════════════════════
 
-import {
-    deleteObject,
-    getDownloadURL,
-    listAll,
-    ref,
-    uploadBytes,
-} from "firebase/storage";
 import { storage } from "./firebase";
 
-/**
- * Convert Base64/URI to Blob
- */
 async function uriToBlob(uri: string): Promise<Blob> {
-  const response = await fetch(uri);
-  return response.blob();
+  const res = await fetch(uri);
+  return res.blob();
 }
 
-/**
- * Upload File ke Firebase Storage
- * Path contoh: "galeri/image_1234567890.jpg"
- */
+const DEFAULT_BUCKET = "public";
+
 export async function uploadFile(
   uri: string,
-  path: string
+  path: string,
+  bucket = DEFAULT_BUCKET
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
     const blob = await uriToBlob(uri);
-    const fileRef = ref(storage, path);
-    
-    await uploadBytes(fileRef, blob);
-    const downloadUrl = await getDownloadURL(fileRef);
-    
-    console.log("✅ File uploaded:", path);
-    return { success: true, url: downloadUrl };
-  } catch (error) {
-    const errorMessage = (error as Error).message;
-    console.error("❌ Upload error:", errorMessage);
-    return { success: false, error: errorMessage };
+    // @ts-ignore
+    const { data, error } = await storage.from(bucket).upload(path, blob, { upsert: true });
+    if (error) throw error;
+    const { publicURL } = storage.from(bucket).getPublicUrl(path);
+    console.log("✅ File uploaded (supabase):", path);
+    return { success: true, url: publicURL };
+  } catch (error: any) {
+    console.error("❌ Upload error:", error);
+    return { success: false, error: error.message || String(error) };
   }
 }
 
-/**
- * Upload Image untuk Galeri
- */
 export async function uploadGaleriImage(
   uri: string,
   imageName: string
@@ -55,9 +39,6 @@ export async function uploadGaleriImage(
   return uploadFile(uri, path);
 }
 
-/**
- * Upload Image untuk Paket
- */
 export async function uploadPaketImage(
   uri: string,
   paketId: string,
@@ -67,14 +48,12 @@ export async function uploadPaketImage(
   return uploadFile(uri, path);
 }
 
-/**
- * Delete File dari Storage
- */
-export async function deleteFile(path: string): Promise<boolean> {
+export async function deleteFile(path: string, bucket = DEFAULT_BUCKET): Promise<boolean> {
   try {
-    const fileRef = ref(storage, path);
-    await deleteObject(fileRef);
-    console.log("✅ File deleted:", path);
+    // @ts-ignore
+    const { error } = await storage.from(bucket).remove([path]);
+    if (error) throw error;
+    console.log("✅ File deleted (supabase):", path);
     return true;
   } catch (error) {
     console.error("❌ Delete error:", error);
@@ -82,43 +61,29 @@ export async function deleteFile(path: string): Promise<boolean> {
   }
 }
 
-/**
- * List Files di Folder tertentu
- */
 export async function listFiles(
-  folderPath: string
+  folderPath: string,
+  bucket = DEFAULT_BUCKET
 ): Promise<{ success: boolean; files?: string[]; error?: string }> {
   try {
-    const folderRef = ref(storage, folderPath);
-    const result = await listAll(folderRef);
-    
-    const fileUrls = await Promise.all(
-      result.items.map((item) => getDownloadURL(item))
-    );
-    
-    console.log("✅ Files listed:", fileUrls.length);
-    return { success: true, files: fileUrls };
-  } catch (error) {
-    const errorMessage = (error as Error).message;
-    console.error("❌ List error:", errorMessage);
-    return { success: false, error: errorMessage };
+    // @ts-ignore
+    const { data, error } = await storage.from(bucket).list(folderPath, { limit: 100 });
+    if (error) throw error;
+    const urls = data.map((item: any) => storage.from(bucket).getPublicUrl(item.name).publicURL);
+    return { success: true, files: urls };
+  } catch (error: any) {
+    return { success: false, error: error.message || String(error) };
   }
 }
 
-/**
- * Get Download URL dari path tertentu
- */
 export async function getFileUrl(
-  path: string
+  path: string,
+  bucket = DEFAULT_BUCKET
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
-    const fileRef = ref(storage, path);
-    const url = await getDownloadURL(fileRef);
-    console.log("✅ File URL retrieved:", path);
-    return { success: true, url };
-  } catch (error) {
-    const errorMessage = (error as Error).message;
-    console.error("❌ Get URL error:", errorMessage);
-    return { success: false, error: errorMessage };
+    const { publicURL } = storage.from(bucket).getPublicUrl(path);
+    return { success: true, url: publicURL };
+  } catch (error: any) {
+    return { success: false, error: error.message || String(error) };
   }
 }

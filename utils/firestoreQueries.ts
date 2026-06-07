@@ -1,42 +1,26 @@
 // ═══════════════════════════════════════════════════════
-// utils/firestoreQueries.ts — Firestore Helper Functions
+// utils/firestoreQueries.ts — Reimplemented using Supabase
 // ═══════════════════════════════════════════════════════
 
 import type { UserProfile } from "@/types";
-import {
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    orderBy,
-    query,
-    setDoc,
-    updateDoc,
-    where
-} from "firebase/firestore";
 import { db } from "./firebase";
 
-// ── USERS ────────────────────────────────────────────────
+// USERS
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   try {
-    const userRef = doc(db, "users", userId);
-    const userDoc = await getDoc(userRef);
-    return userDoc.exists() ? (userDoc.data() as UserProfile) : null;
+    const { data, error } = await db.from("users").select("*").eq("id", userId).single();
+    if (error) throw error;
+    return (data as UserProfile) ?? null;
   } catch (error) {
     console.error("❌ Error getting user profile:", error);
     return null;
   }
 }
 
-export async function saveUserProfile(
-  userId: string,
-  profile: UserProfile
-): Promise<boolean> {
+export async function saveUserProfile(userId: string, profile: UserProfile): Promise<boolean> {
   try {
-    const userRef = doc(db, "users", userId);
-    await setDoc(userRef, profile);
-    console.log("✅ User profile saved:", userId);
+    const { error } = await db.from("users").insert([{ ...profile, id: userId }]);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error saving user profile:", error);
@@ -44,14 +28,10 @@ export async function saveUserProfile(
   }
 }
 
-export async function updateUserProfile(
-  userId: string,
-  updates: Partial<UserProfile>
-): Promise<boolean> {
+export async function updateUserProfile(userId: string, updates: Partial<UserProfile>): Promise<boolean> {
   try {
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, updates);
-    console.log("✅ User profile updated:", userId);
+    const { error } = await db.from("users").update(updates).eq("id", userId);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error updating user profile:", error);
@@ -59,7 +39,7 @@ export async function updateUserProfile(
   }
 }
 
-// ── PAKET (Packages) ─────────────────────────────────────
+// PAKET
 export interface PaketData {
   id: string;
   nama: string;
@@ -73,10 +53,9 @@ export interface PaketData {
 
 export async function fetchPaketData(): Promise<PaketData[]> {
   try {
-    const paketRef = collection(db, "paket");
-    const q = query(paketRef, orderBy("nama", "asc"));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as PaketData));
+    const { data, error } = await db.from("paket").select("*").order("nama", { ascending: true });
+    if (error) throw error;
+    return (data as PaketData[]) || [];
   } catch (error) {
     console.error("❌ Error fetching paket:", error);
     return [];
@@ -85,9 +64,9 @@ export async function fetchPaketData(): Promise<PaketData[]> {
 
 export async function fetchPaketById(id: string): Promise<PaketData | null> {
   try {
-    const paketRef = doc(db, "paket", id);
-    const paketDoc = await getDoc(paketRef);
-    return paketDoc.exists() ? ({ ...paketDoc.data(), id: paketDoc.id } as PaketData) : null;
+    const { data, error } = await db.from("paket").select("*").eq("id", id).single();
+    if (error) throw error;
+    return (data as PaketData) ?? null;
   } catch (error) {
     console.error("❌ Error fetching paket by id:", error);
     return null;
@@ -96,9 +75,8 @@ export async function fetchPaketById(id: string): Promise<PaketData | null> {
 
 export async function addPaket(paketId: string, data: PaketData): Promise<boolean> {
   try {
-    const paketRef = doc(db, "paket", paketId);
-    await setDoc(paketRef, data);
-    console.log("✅ Paket added:", paketId);
+    const { error } = await db.from("paket").insert([{ ...data, id: paketId }]);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error adding paket:", error);
@@ -106,14 +84,10 @@ export async function addPaket(paketId: string, data: PaketData): Promise<boolea
   }
 }
 
-export async function updatePaket(
-  paketId: string,
-  updates: Partial<PaketData>
-): Promise<boolean> {
+export async function updatePaket(paketId: string, updates: Partial<PaketData>): Promise<boolean> {
   try {
-    const paketRef = doc(db, "paket", paketId);
-    await updateDoc(paketRef, updates);
-    console.log("✅ Paket updated:", paketId);
+    const { error } = await db.from("paket").update(updates).eq("id", paketId);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error updating paket:", error);
@@ -123,9 +97,8 @@ export async function updatePaket(
 
 export async function deletePaket(paketId: string): Promise<boolean> {
   try {
-    const paketRef = doc(db, "paket", paketId);
-    await deleteDoc(paketRef);
-    console.log("✅ Paket deleted:", paketId);
+    const { error } = await db.from("paket").delete().eq("id", paketId);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error deleting paket:", error);
@@ -133,7 +106,7 @@ export async function deletePaket(paketId: string): Promise<boolean> {
   }
 }
 
-// ── BERITA (News) ───────────────────────────────────────
+// BERITA
 export interface BeritaData {
   id: string;
   judul: string;
@@ -149,14 +122,9 @@ export interface BeritaData {
 
 export async function fetchBeritaData(): Promise<BeritaData[]> {
   try {
-    const beritaRef = collection(db, "berita");
-    const q = query(
-      beritaRef,
-      where("isPublished", "==", true),
-      orderBy("tanggal", "desc")
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as BeritaData));
+    const { data, error } = await db.from("berita").select("*").eq("isPublished", true).order("tanggal", { ascending: false });
+    if (error) throw error;
+    return (data as BeritaData[]) || [];
   } catch (error) {
     console.error("❌ Error fetching berita:", error);
     return [];
@@ -165,9 +133,9 @@ export async function fetchBeritaData(): Promise<BeritaData[]> {
 
 export async function fetchBeritaById(id: string): Promise<BeritaData | null> {
   try {
-    const beritaRef = doc(db, "berita", id);
-    const beritaDoc = await getDoc(beritaRef);
-    return beritaDoc.exists() ? ({ ...beritaDoc.data(), id: beritaDoc.id } as BeritaData) : null;
+    const { data, error } = await db.from("berita").select("*").eq("id", id).single();
+    if (error) throw error;
+    return (data as BeritaData) ?? null;
   } catch (error) {
     console.error("❌ Error fetching berita by id:", error);
     return null;
@@ -176,9 +144,8 @@ export async function fetchBeritaById(id: string): Promise<BeritaData | null> {
 
 export async function addBerita(beritaId: string, data: BeritaData): Promise<boolean> {
   try {
-    const beritaRef = doc(db, "berita", beritaId);
-    await setDoc(beritaRef, data);
-    console.log("✅ Berita added:", beritaId);
+    const { error } = await db.from("berita").insert([{ ...data, id: beritaId }]);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error adding berita:", error);
@@ -186,14 +153,10 @@ export async function addBerita(beritaId: string, data: BeritaData): Promise<boo
   }
 }
 
-export async function updateBerita(
-  beritaId: string,
-  updates: Partial<BeritaData>
-): Promise<boolean> {
+export async function updateBerita(beritaId: string, updates: Partial<BeritaData>): Promise<boolean> {
   try {
-    const beritaRef = doc(db, "berita", beritaId);
-    await updateDoc(beritaRef, updates);
-    console.log("✅ Berita updated:", beritaId);
+    const { error } = await db.from("berita").update(updates).eq("id", beritaId);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error updating berita:", error);
@@ -203,9 +166,8 @@ export async function updateBerita(
 
 export async function deleteBerita(beritaId: string): Promise<boolean> {
   try {
-    const beritaRef = doc(db, "berita", beritaId);
-    await deleteDoc(beritaRef);
-    console.log("✅ Berita deleted:", beritaId);
+    const { error } = await db.from("berita").delete().eq("id", beritaId);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error deleting berita:", error);
@@ -213,7 +175,7 @@ export async function deleteBerita(beritaId: string): Promise<boolean> {
   }
 }
 
-// ── GALERI (Gallery) ────────────────────────────────────
+// GALERI
 export interface GaleriData {
   id: string;
   imageUrl: string;
@@ -224,10 +186,9 @@ export interface GaleriData {
 
 export async function fetchGaleriData(): Promise<GaleriData[]> {
   try {
-    const galeriRef = collection(db, "galeri");
-    const q = query(galeriRef, orderBy("tanggal", "desc"));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as GaleriData));
+    const { data, error } = await db.from("galeri").select("*").order("tanggal", { ascending: false });
+    if (error) throw error;
+    return (data as GaleriData[]) || [];
   } catch (error) {
     console.error("❌ Error fetching galeri:", error);
     return [];
@@ -236,9 +197,8 @@ export async function fetchGaleriData(): Promise<GaleriData[]> {
 
 export async function addGaleri(galeriId: string, data: GaleriData): Promise<boolean> {
   try {
-    const galeriRef = doc(db, "galeri", galeriId);
-    await setDoc(galeriRef, data);
-    console.log("✅ Galeri added:", galeriId);
+    const { error } = await db.from("galeri").insert([{ ...data, id: galeriId }]);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error adding galeri:", error);
@@ -248,9 +208,8 @@ export async function addGaleri(galeriId: string, data: GaleriData): Promise<boo
 
 export async function deleteGaleri(galeriId: string): Promise<boolean> {
   try {
-    const galeriRef = doc(db, "galeri", galeriId);
-    await deleteDoc(galeriRef);
-    console.log("✅ Galeri deleted:", galeriId);
+    const { error } = await db.from("galeri").delete().eq("id", galeriId);
+    if (error) throw error;
     return true;
   } catch (error) {
     console.error("❌ Error deleting galeri:", error);

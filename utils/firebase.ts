@@ -1,50 +1,23 @@
 // ═══════════════════════════════════════════════════════
-// utils/firebase.ts — Firebase Configuration
+// utils/firebase.ts — Supabase client (keperluan pengganti Firebase)
 // ═══════════════════════════════════════════════════════
 
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-/**
- * Firebase Configuration
- * 
- * SETUP INSTRUCTIONS:
- * 1. Go to https://console.firebase.google.com
- * 2. Create a new project or select existing
- * 3. Go to Project Settings (⚙️ icon)
- * 4. Copy the Web config values below
- * 5. Replace the placeholder values
- * 
- * For production, use environment variables instead:
- * - Create .env.local file
- * - Add: EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
- * - Add: EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
- * - etc.
- */
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
 
-const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || "YOUR_API_KEY_HERE",
-  authDomain:
-    process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN ||
-    "your-project.firebaseapp.com",
-  projectId:
-    process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || "your-project-id",
-  storageBucket:
-    process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-    "your-project.appspot.com",
-  messagingSenderId:
-    process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:abc123",
-};
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn(
+    "Supabase environment variables not set: EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY"
+  );
+}
 
-// ── Initialize Firebase ──────────────────────────────────
-const app = initializeApp(firebaseConfig);
+export const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ── Export Firebase Services ─────────────────────────────
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+// Backwards-compatible exports used by the app
+export const auth = supabase.auth;
+export const storage = supabase.storage;
+export const db = supabase; // use `db` name where code expects a db client
 
-export default app;
+export default supabase;

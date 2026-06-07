@@ -1,125 +1,89 @@
 // ═══════════════════════════════════════════════════════
-// utils/firebaseAuth.ts — Firebase Authentication Helpers
+// utils/firebaseAuth.ts — Auth helpers rewritten to use Supabase
 // ═══════════════════════════════════════════════════════
 
-import {
-    AuthError,
-    createUserWithEmailAndPassword,
-    sendPasswordResetEmail,
-    signInWithEmailAndPassword,
-    signOut,
-} from "firebase/auth";
 import { auth } from "./firebase";
 
-/**
- * Handle Firebase Auth Errors dengan pesan user-friendly
- */
-export function getAuthErrorMessage(error: AuthError): string {
-  const errorCode = error.code;
-
-  const errorMessages: Record<string, string> = {
-    "auth/email-already-in-use": "Email sudah terdaftar",
-    "auth/invalid-email": "Format email tidak valid",
-    "auth/operation-not-allowed": "Operasi tidak diizinkan",
-    "auth/weak-password": "Password terlalu lemah (min 6 karakter)",
-    "auth/user-disabled": "Akun ini telah dinonaktifkan",
-    "auth/user-not-found": "Email tidak terdaftar",
-    "auth/wrong-password": "Password salah",
-    "auth/too-many-requests": "Terlalu banyak percobaan login. Coba lagi nanti",
-    "auth/network-request-failed": "Koneksi internet gagal",
-  };
-
-  return errorMessages[errorCode] || "Terjadi kesalahan. Coba lagi nanti.";
+function mapAuthError(message: string) {
+  // Basic mapping — expand as needed
+  if (!message) return "Terjadi kesalahan. Coba lagi nanti.";
+  if (message.includes("invalid")) return "Format email tidak valid";
+  if (message.includes("already")) return "Email sudah terdaftar";
+  if (message.includes("password")) return "Password tidak valid";
+  return message;
 }
 
-/**
- * Logout User
- */
 export async function logoutUser(): Promise<boolean> {
   try {
-    await signOut(auth);
-    console.log("✅ User logged out");
+    const { error } = await auth.signOut();
+    if (error) throw error;
+    console.log("✅ User logged out (supabase)");
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Logout error:", error);
     return false;
   }
 }
 
-/**
- * Register dengan Email & Password (untuk future enhancement)
- */
 export async function registerWithEmail(
   email: string,
   password: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    console.log("✅ User registered:", userCredential.user.uid);
+    const res = await auth.signUp({ email, password });
+    if (res.error) throw res.error;
+    console.log("✅ User registered (supabase)");
     return { success: true, message: "Registrasi berhasil" };
-  } catch (error) {
-    const errorMessage = getAuthErrorMessage(error as AuthError);
-    console.error("❌ Registration error:", errorMessage);
-    return { success: false, message: errorMessage };
+  } catch (error: any) {
+    const msg = mapAuthError(error.message || String(error));
+    console.error("❌ Registration error:", msg);
+    return { success: false, message: msg };
   }
 }
 
-/**
- * Login dengan Email & Password (untuk future enhancement)
- */
 export async function loginWithEmail(
   email: string,
   password: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    console.log("✅ User logged in:", userCredential.user.uid);
+    const res = await auth.signInWithPassword({ email, password });
+    if (res.error) throw res.error;
+    console.log("✅ User logged in (supabase)");
     return { success: true, message: "Login berhasil" };
-  } catch (error) {
-    const errorMessage = getAuthErrorMessage(error as AuthError);
-    console.error("❌ Login error:", errorMessage);
-    return { success: false, message: errorMessage };
+  } catch (error: any) {
+    const msg = mapAuthError(error.message || String(error));
+    console.error("❌ Login error:", msg);
+    return { success: false, message: msg };
   }
 }
 
-/**
- * Reset Password
- */
 export async function resetPassword(
   email: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    await sendPasswordResetEmail(auth, email);
-    console.log("✅ Password reset email sent");
-    return {
-      success: true,
-      message: "Email reset password telah dikirim ke email Anda",
-    };
-  } catch (error) {
-    const errorMessage = getAuthErrorMessage(error as AuthError);
-    console.error("❌ Password reset error:", errorMessage);
-    return { success: false, message: errorMessage };
+    const res = await auth.resetPasswordForEmail(email);
+    if (res.error) throw res.error;
+    console.log("✅ Password reset email sent (supabase)");
+    return { success: true, message: "Email reset password telah dikirim ke email Anda" };
+  } catch (error: any) {
+    const msg = mapAuthError(error.message || String(error));
+    console.error("❌ Password reset error:", msg);
+    return { success: false, message: msg };
   }
 }
 
-/**
- * Get Current User
- */
 export function getCurrentUser() {
-  return auth.currentUser;
+  // Note: Supabase provides async `getUser()`; this returns null or user if stored locally
+  try {
+    // @ts-ignore
+    const session = auth.session?.();
+    return session?.user ?? null;
+  } catch {
+    return null;
+  }
 }
 
-/**
- * Check if user is authenticated
- */
 export function isUserAuthenticated(): boolean {
-  return !!auth.currentUser;
+  const user = getCurrentUser();
+  return !!user;
 }
